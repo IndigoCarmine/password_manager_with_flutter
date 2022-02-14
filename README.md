@@ -1,7 +1,6 @@
 # password_manager_with_flutter
 
-A new Flutter project.
-
+PasswordManagerで生成されるファイルを開くためのアプリプロジェクトです。
 ## Getting Started
 
 This project is a starting point for a Flutter application.
