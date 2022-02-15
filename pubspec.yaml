@@ -33,7 +33,7 @@ dependencies:
   xml: any
   favicon: any
   file_selector: any
-  aes_crypt: any
+  aes_crypt_null_safe: any
   file_selector_linux: any
 
   # The following adds the Cupertino Icons font to your application.

@@ -4,8 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:password_manager_with_flutter/data.dart';
 import 'package:file_selector/file_selector.dart';
 import 'dart:typed_data';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:aes_crypt/aes_crypt.dart';
+import 'package:aes_crypt_null_safe/aes_crypt_null_safe.dart';
 import 'package:password_manager_with_flutter/my_pdkdf2.dart';
 import 'dart:convert';
 
