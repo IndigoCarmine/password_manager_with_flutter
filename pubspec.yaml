@@ -31,6 +31,7 @@ dependencies:
   favicon: any
   file_selector: any
   aes_crypt: any
+  file_selector_linux: any
   flutter:
     sdk: flutter
 
