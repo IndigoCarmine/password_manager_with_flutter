@@ -99,18 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (filePickerResult == null) return;
     File file = File(filePickerResult.files.single.path!);
     Uint8List fileContent = file.readAsBytesSync();
-    ////File_selector用
-    // final XTypeGroup typeGroup = XTypeGroup(
-    //   label: 'password manager用ファイル',
-    //   extensions: ['pwm'],
-    // );
-    // final XFile? file =
-    //     await openFile(acceptedTypeGroups: [typeGroup]);
-    // if (file == null) {
-    //   return;
-    // }
-    // Uint8List fileContent = await file.readAsBytes();
-
     //fileopen finish!
 
     //encrypt
