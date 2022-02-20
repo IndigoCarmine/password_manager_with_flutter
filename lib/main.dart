@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:xml/xml.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:password_manager_with_flutter/data.dart';
-import 'package:file_selector/file_selector.dart';
+import 'package:file_picker/file_picker.dart';
 import 'dart:typed_data';
 import 'package:aes_crypt_null_safe/aes_crypt_null_safe.dart';
 import 'package:password_manager_with_flutter/my_pdkdf2.dart';
@@ -93,15 +95,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void openfile() async {
     //fileopen
-    final XTypeGroup typeGroup = XTypeGroup(
-      label: 'password manager用ファイル',
-      extensions: ['pwm'],
-    );
-    final XFile? file = await openFile(acceptedTypeGroups: [typeGroup]);
-    if (file == null) {
-      return;
-    }
-    Uint8List fileContent = await file.readAsBytes();
+    FilePickerResult? filePickerResult = await FilePicker.platform.pickFiles();
+    if (filePickerResult == null) return;
+    File file = File(filePickerResult.files.single.path!);
+    Uint8List fileContent = file.readAsBytesSync();
+    ////File_selector用
+    // final XTypeGroup typeGroup = XTypeGroup(
+    //   label: 'password manager用ファイル',
+    //   extensions: ['pwm'],
+    // );
+    // final XFile? file =
+    //     await openFile(acceptedTypeGroups: [typeGroup]);
+    // if (file == null) {
+    //   return;
+    // }
+    // Uint8List fileContent = await file.readAsBytes();
+
     //fileopen finish!
 
     //encrypt
@@ -118,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
         gen.generateKey(password, salt, 1000, blocksize ~/ 8));
     crypt.aesSetKeys(key, iv);
     Uint8List dec = crypt.aesDecrypt(fileContent);
+
     //全体の調整(なせ必要なのか不明)
     //todo #1
     String planetext = utf8.decode(
@@ -141,32 +151,28 @@ class _MyHomePageState extends State<MyHomePage> {
         // in the middle of the parent.
         child: ListView.builder(
           itemBuilder: (BuildContext context, int index) {
-            return Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: Colors.black38),
-                  ),
-                ),
-                child: ListTile(
-                  leading: FutureBuilder(
-                      future: dataList[index].getFavicon(),
-                      builder: (bind, image) {
-                        if (image.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else {
-                          return dataList[index].image;
-                        }
-                      }),
-                  title: Text(dataList[index].AccountID),
-                  subtitle: Text('Binding:' +
-                      dataList[index].BindAddress +
-                      '  URL:' +
-                      dataList[index].URL),
-                  onTap: () {
-                    Clipboard.setData(
-                        ClipboardData(text: dataList[index].Password));
-                  },
-                ));
+            return Card(
+              child: ListTile(
+                leading: FutureBuilder(
+                    future: dataList[index].getFavicon(),
+                    builder: (bind, image) {
+                      if (image.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else {
+                        return dataList[index].image;
+                      }
+                    }),
+                title: Text(dataList[index].AccountID),
+                subtitle: Text('Binding:' +
+                    dataList[index].BindAddress +
+                    '  URL:' +
+                    dataList[index].URL),
+                onTap: () {
+                  Clipboard.setData(
+                      ClipboardData(text: dataList[index].Password));
+                },
+              ),
+            );
           },
           itemCount: dataList.length,
         ),

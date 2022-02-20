@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:xml/xml.dart';
 import 'package:favicon/favicon.dart' as favicon;
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ class Data {
   String URL;
   String Password;
   String BindAddress;
+  final double iconsize = 40;
   late Widget image;
   Data(this.AccountID, this.BindAddress, this.Password, this.URL);
 
@@ -19,15 +22,23 @@ class Data {
     try {
       image = Image.network(
         await getFaviconURLAsync(),
-        errorBuilder: (context, error, stackTrace) => const Icon(
-          Icons.error,
-          color: Colors.red,
+        errorBuilder: (context, error, stackTrace) => SizedBox(
+          child: const Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
+          width: iconsize,
+          height: iconsize,
         ),
-        width: 50,
-        height: 50,
+        width: iconsize,
+        height: iconsize,
       );
     } catch (e) {
-      image = const Icon(Icons.image_not_supported);
+      image = SizedBox(
+        child: const Icon(Icons.image_not_supported),
+        width: iconsize,
+        height: iconsize,
+      );
     }
   }
 
