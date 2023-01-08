@@ -123,19 +123,17 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView.builder(
               itemCount: fileList.length,
               itemBuilder: ((context, index) => Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       TextButton(
                           onPressed: () {
                             openFile(fileList[index]);
                           },
                           child: Text(fileList[index].getPath().substring(
-                              fileList[index].getPath().length - 20,
+                              fileList[index].getPath().length - 10,
                               fileList[index].getPath().length))),
                       IconButton(
                           onPressed: () {
-                            setState(() {
-                              showDialog(
+                            showDialog(
                                 context: context,
                                 builder: (context) {
                                   return AlertDialog(
@@ -157,9 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           child: const Text('No'))
                                     ],
                                   );
-                                },
-                              );
-                            });
+                                });
                           },
                           icon: const Icon(Icons.delete))
                     ],

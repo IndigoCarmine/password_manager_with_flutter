@@ -84,14 +84,14 @@ class FileData {
   String getPath() => _path;
   String getPassword() => _password;
 
-  //if file is not exist, it return null.
+  //if file is not exist or invailed, it return null.
   Future<List<Data>?> getData() async {
     File file = File(_path);
     if (!(await file.exists())) return null;
 
     Uint8List fileContent = file.readAsBytesSync();
     //fileopen finish!
-    String planetext = encrypt(fileContent, _password);
+    String planetext = decrypt(fileContent, _password);
 
     return xmlserialize(planetext);
   }
@@ -113,7 +113,7 @@ class FileData {
     }
   }
 
-  String encrypt(Uint8List fileContent, String password) {
+  String decrypt(Uint8List fileContent, String password) {
     int keysize = 256;
     int blocksize = 128;
     String salt = "saltは必ず8バイト以上";
