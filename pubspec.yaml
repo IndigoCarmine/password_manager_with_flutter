@@ -34,6 +34,10 @@ dependencies:
   favicon: any
   file_picker: any
   aes_crypt_null_safe: any
+  local_auth: any
+  shared_preferences: any
+  secure_shared_preferences: any
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

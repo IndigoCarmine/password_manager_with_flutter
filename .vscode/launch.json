@@ -4,11 +4,12 @@
     // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "password_manager_with_flutter",
             "request": "launch",
             "type": "dart",
-            "args": ["no-sound-null-safety"]
+            "args": []
         },
         {
             "name": "password_manager_with_flutter (profile mode)",
