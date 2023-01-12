@@ -1,16 +1,13 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
-
-import 'package:aes_crypt_null_safe/aes_crypt_null_safe.dart';
+import "package:hex/hex.dart";
+import 'package:libcrypto/libcrypto.dart';
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 import 'package:favicon/favicon.dart' as favicon;
 import 'package:flutter/material.dart';
-
-import 'my_pdkdf2.dart';
 
 class Data {
   String AccountID;
@@ -91,7 +88,7 @@ class FileData {
 
     Uint8List fileContent = file.readAsBytesSync();
     //fileopen finish!
-    String planetext = decrypt(fileContent, _password);
+    String planetext = await decrypt(fileContent, _password);
 
     return xmlserialize(planetext);
   }
@@ -113,29 +110,13 @@ class FileData {
     }
   }
 
-  String decrypt(Uint8List fileContent, String password) {
-    int keysize = 256;
-    int blocksize = 128;
-    String salt = "saltは必ず8バイト以上";
+  Future<String> decrypt(Uint8List fileContent, String password) async {
+    //the first 10byte is salt
+    if (fileContent.length < 10) return "";
+    Uint8List salt = fileContent.sublist(0, 10);
+    final sha512Hash = await Pbkdf2(iterations: 1000).sha512(password, salt);
 
-    var crypt = AesCrypt();
-    var gen = PBKDF2();
-    Uint8List key =
-        Uint8List.fromList(gen.generateKey(password, salt, 1000, keysize ~/ 8));
-    Uint8List iv = Uint8List.fromList(
-        gen.generateKey(password, salt, 1000, blocksize ~/ 8));
-    crypt.aesSetKeys(key, iv);
-    Uint8List dec = crypt.aesDecrypt(fileContent);
-
-    //全体の調整(なせ必要なのか不明)
-    //todo #1
-
-    String planetext = utf8.decode(
-        dec.toList().getRange(22, dec.length).toList(),
-        allowMalformed: true);
-    log(planetext);
-    planetext = '<?xml version="1.0" encoding="utf-8"?>' + planetext;
-    planetext = planetext.replaceAll('\x0E', '');
-    return planetext;
+    return await AesCbc()
+        .decrypt(HEX.encode(fileContent.sublist(10)), secretKey: sha512Hash);
   }
 }

@@ -38,10 +38,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState() {
-    getSettings().then((value) => loadRecentFile());
+    loadPathes().then((value) => loadRecentFile());
   }
 
-  Future<void> getSettings() async {
+  //load file list from shared preferences
+  Future<void> loadPathes() async {
     var _pref = await SharedPreferences.getInstance();
     var _securePref = await SecureSharedPref.getInstance();
     List<String> pathes = _pref.getStringList("pathes") ?? [];
@@ -80,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<FileData> fileList = [];
   List<Data> dataList = [];
 
+  //authenticate with biometric. if pass, return true.
   Future<bool> authenticate() async {
     LocalAuthentication _localAuth = LocalAuthentication();
 
@@ -93,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
         return false;
       }
     } else {
-      return true;
+      return false;
     }
   }
 
@@ -104,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<void> newFileSelect() async {
+  Future<void> selectNewFile() async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(type: FileType.any);
     if (result != null && result.isSinglePick) {
@@ -163,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(onPressed: newFileSelect, icon: const Icon(Icons.plus_one))
+          IconButton(onPressed: selectNewFile, icon: const Icon(Icons.plus_one))
         ],
       ),
       body: MainView(dataList: dataList),
