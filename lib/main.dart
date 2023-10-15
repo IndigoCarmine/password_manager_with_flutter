@@ -204,7 +204,7 @@ class MainView extends StatelessWidget {
                     if (image.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     } else {
-                      return dataList[index].image;
+                      return dataList[index].image!;
                     }
                   }),
               title: Text(dataList[index].AccountID),

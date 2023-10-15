@@ -1,6 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:convert';
 import 'dart:io';
 import "package:hex/hex.dart";
 import 'package:libcrypto/libcrypto.dart';
@@ -15,7 +14,7 @@ class Data {
   String Password;
   String BindAddress;
   final double iconsize = 40;
-  late Widget image;
+  Widget? image;
   Data(this.AccountID, this.BindAddress, this.Password, this.URL);
 
   Future<String> getFaviconURLAsync() async {
@@ -24,6 +23,7 @@ class Data {
   }
 
   Future<void> getFavicon() async {
+    if (image != null) return;
     try {
       image = Image.network(
         await getFaviconURLAsync(),
@@ -113,10 +113,11 @@ class FileData {
   Future<String> decrypt(Uint8List fileContent, String password) async {
     //the first 10byte is salt
     if (fileContent.length < 10) return "";
-    Uint8List salt = fileContent.sublist(0, 10);
+    Uint8List salt = fileContent.sublist(0, 16);
     final sha512Hash = await Pbkdf2(iterations: 1000).sha512(password, salt);
+    final key = sha512Hash.substring(0, 32 * 2);
 
     return await AesCbc()
-        .decrypt(HEX.encode(fileContent.sublist(10)), secretKey: sha512Hash);
+        .decrypt(HEX.encode(fileContent.sublist(16)), secretKey: key);
   }
 }
