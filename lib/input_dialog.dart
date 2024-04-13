@@ -9,8 +9,12 @@ Future<String> inputDialog(BuildContext context) async {
           title: const Text('recent_password'),
           content: TextField(
             obscureText: true,
+            autofocus: true,
             controller: editingController,
             decoration: const InputDecoration(hintText: "ここに入力"),
+            onSubmitted:  (value) {
+              Navigator.pop(context);
+            },
           ),
           actions: <Widget>[
             TextButton(
@@ -24,7 +28,6 @@ Future<String> inputDialog(BuildContext context) async {
               },
             ),
             TextButton(
-              autofocus: true,
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.white)),

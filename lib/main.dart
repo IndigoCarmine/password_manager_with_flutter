@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:password_manager_with_flutter/data.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:secure_shared_preferences/secure_shared_preferences.dart';
+// import 'package:secure_shared_preferences/secure_shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'input_dialog.dart';
 
 void main() {
@@ -44,12 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
   //load file list from shared preferences
   Future<void> loadPathes() async {
     var _pref = await SharedPreferences.getInstance();
-    var _securePref = await SecureSharedPref.getInstance();
+    const  _securePref = FlutterSecureStorage();
     List<String> pathes = _pref.getStringList("pathes") ?? [];
-    List<String> passwords = (await _securePref.getStringList("passwords"));
+    final passwords = (await _securePref.readAll());
     List<FileData> _fileList = [];
     for (int i = 0; i < pathes.length; i++) {
-      _fileList.add(FileData(pathes[i], passwords[i]));
+      _fileList.add(FileData(pathes[i], passwords[pathes[0]]));
     }
     setState(() {
       fileList = _fileList;
@@ -59,22 +62,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> loadRecentFile() async {
     var _pref = await SharedPreferences.getInstance();
     int? index = _pref.getInt("recentFile");
-    if (index != null) {
+    if (index != null && 0 <=  index&& index< fileList.length) {
       await openFile(fileList[index]);
     }
   }
 
   Future<void> updateSharedData({FileData? data}) async {
     List<String> pathes = [];
-    List<String> passwords = [];
+    List<String?> passwords = [];
     for (var filedata in fileList) {
       pathes.add(filedata.getPath());
       passwords.add(filedata.getPassword());
     }
     var _pref = await SharedPreferences.getInstance();
-    var _securePref = await SecureSharedPref.getInstance();
+    const _securePref = FlutterSecureStorage();
     _pref.setStringList("pathes", pathes);
-    _securePref.putStringList("passwords", passwords);
+    _securePref.deleteAll();
+    for(int i =0; i<pathes.length;i++){
+      _securePref.write(key: pathes[i], value: passwords[i]);
+    }
     if (data != null) _pref.setInt("recentFile", fileList.indexOf(data));
   }
 
@@ -83,6 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //authenticate with biometric. if pass, return true.
   Future<bool> authenticate() async {
+    //linux is not implementation getAvaliableBiometrix function.
+    if(Platform.isLinux)return false;
     LocalAuthentication _localAuth = LocalAuthentication();
 
     List<BiometricType> availableBiometricTypes =
@@ -100,10 +108,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> openFile(FileData fileData) async {
-    if (await authenticate()) {
+    if (!(await authenticate())) {
+      final password = await inputDialog(context);
+      fileData.editSettings(password: password);
+    }
+
       dataList = (await fileData.getData()) ?? [];
       setState(() {});
-    }
   }
 
   Future<void> selectNewFile() async {
@@ -138,24 +149,37 @@ class _MyHomePageState extends State<MyHomePage> {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  return AlertDialog(
-                                    content: const Text("消去しますか。"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: (() {
-                                            fileList.removeAt(index);
-                                            updateSharedData().then((value) {
+                                  return KeyboardListener(
+                                    focusNode: FocusNode(),
+                                    autofocus:  true,
+                                    onKeyEvent: (value) async{
+                                      if(value.logicalKey == LogicalKeyboardKey.enter){
+                                        fileList.removeAt(index);
+                                        await updateSharedData();
+                                        setState(() {});
+                                        
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: AlertDialog(
+                                      content: const Text("消去しますか。"),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: (()async {
+                                              fileList.removeAt(index);
+                                              await updateSharedData();
                                               setState(() {});
-                                            });
-                                            Navigator.pop(context);
-                                          }),
-                                          child: const Text('Yes')),
-                                      TextButton(
-                                          onPressed: (() {
-                                            Navigator.pop(context);
-                                          }),
-                                          child: const Text('No'))
-                                    ],
+                                              
+                                              Navigator.pop(context);
+                                            }),
+                                            child: const Text('Yes')),
+                                        TextButton(
+                                            onPressed: (() {
+                                              Navigator.pop(context);
+                                            }),
+                                            child: const Text('No'))
+                                      ],
+                                    ),
                                   );
                                 });
                           },
@@ -204,7 +228,7 @@ class MainView extends StatelessWidget {
                     if (image.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
                     } else {
-                      return dataList[index].image!;
+                      return dataList[index].image ?? const SizedBox();
                     }
                   }),
               title: Text(dataList[index].AccountID),

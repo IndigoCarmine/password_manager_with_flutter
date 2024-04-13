@@ -37,7 +37,7 @@ dependencies:
   crypt: any
   local_auth: any
   shared_preferences: any
-  secure_shared_preferences: any
+  flutter_secure_storage: any
   
 
   # The following adds the Cupertino Icons font to your application.

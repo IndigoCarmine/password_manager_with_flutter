@@ -39,6 +39,8 @@ class Data {
         height: iconsize,
       );
     } catch (e) {
+      debugPrint((await getFaviconURLAsync()));
+      debugPrint(e.toString());
       image = SizedBox(
         child: const Icon(Icons.image_not_supported),
         width: iconsize,
@@ -75,20 +77,22 @@ class Data {
 
 class FileData {
   String _path;
-  String _password;
+  String ? _password;
   FileData(this._path, this._password);
 
   String getPath() => _path;
-  String getPassword() => _password;
+  String? getPassword() => _password;
 
   //if file is not exist or invailed, it return null.
   Future<List<Data>?> getData() async {
+    if(_password ==null) return null;
     File file = File(_path);
     if (!(await file.exists())) return null;
 
     Uint8List fileContent = file.readAsBytesSync();
+
     //fileopen finish!
-    String planetext = await decrypt(fileContent, _password);
+    String planetext = await decrypt(fileContent, _password!);
 
     return xmlserialize(planetext);
   }
