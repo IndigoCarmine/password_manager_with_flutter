@@ -15,7 +15,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({super.key, required this.title});
 
   final String title;
 
@@ -46,22 +46,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //load file list from shared preferences
   Future<void> loadPathes() async {
-    var _pref = await SharedPreferences.getInstance();
-    const  _securePref = FlutterSecureStorage();
-    List<String> pathes = _pref.getStringList("pathes") ?? [];
-    final passwords = (await _securePref.readAll());
-    List<FileData> _fileList = [];
+    var pref = await SharedPreferences.getInstance();
+    const  securePref = FlutterSecureStorage();
+    List<String> pathes = pref.getStringList("pathes") ?? [];
+    final passwords = (await securePref.readAll());
+    List<FileData> fileList = [];
     for (int i = 0; i < pathes.length; i++) {
-      _fileList.add(FileData(pathes[i], passwords[pathes[0]]));
+      fileList.add(FileData(pathes[i], passwords[pathes[0]]));
     }
     setState(() {
-      fileList = _fileList;
+      fileList = fileList;
     });
   }
 
   Future<void> loadRecentFile() async {
-    var _pref = await SharedPreferences.getInstance();
-    int? index = _pref.getInt("recentFile");
+    var pref = await SharedPreferences.getInstance();
+    int? index = pref.getInt("recentFile");
     if (index != null && 0 <=  index&& index< fileList.length) {
       await openFile(fileList[index]);
     }
@@ -74,14 +74,14 @@ class _MyHomePageState extends State<MyHomePage> {
       pathes.add(filedata.getPath());
       passwords.add(filedata.getPassword());
     }
-    var _pref = await SharedPreferences.getInstance();
-    const _securePref = FlutterSecureStorage();
-    _pref.setStringList("pathes", pathes);
-    _securePref.deleteAll();
+    var pref = await SharedPreferences.getInstance();
+    const securePref = FlutterSecureStorage();
+    pref.setStringList("pathes", pathes);
+    securePref.deleteAll();
     for(int i =0; i<pathes.length;i++){
-      _securePref.write(key: pathes[i], value: passwords[i]);
+      securePref.write(key: pathes[i], value: passwords[i]);
     }
-    if (data != null) _pref.setInt("recentFile", fileList.indexOf(data));
+    if (data != null) pref.setInt("recentFile", fileList.indexOf(data));
   }
 
   List<FileData> fileList = [];
@@ -91,14 +91,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<bool> authenticate() async {
     //linux is not implementation getAvaliableBiometrix function.
     if(Platform.isLinux)return false;
-    LocalAuthentication _localAuth = LocalAuthentication();
+    LocalAuthentication localAuth = LocalAuthentication();
 
     List<BiometricType> availableBiometricTypes =
-        await _localAuth.getAvailableBiometrics();
+        await localAuth.getAvailableBiometrics();
 
     if (availableBiometricTypes.contains(BiometricType.strong)) {
       try {
-        return await _localAuth.authenticate(localizedReason: "自動認証します。");
+        return await localAuth.authenticate(localizedReason: "自動認証します。");
       } on PlatformException catch (_) {
         return false;
       }
@@ -109,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> openFile(FileData fileData) async {
     if (!(await authenticate())) {
+      if(!mounted) return;
       final password = await inputDialog(context);
       fileData.editSettings(password: password);
     }
@@ -121,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(type: FileType.any);
     if (result != null && result.isSinglePick) {
+      if(!mounted)return;
       var newFile = FileData(result.paths.first!, await inputDialog(context));
       fileList.add(newFile);
       await updateSharedData(data: newFile);
@@ -142,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             openFile(fileList[index]);
                           },
                           child: Text(fileList[index].getPath().substring(
-                              fileList[index].getPath().length - 10,
+                              fileList[index].getPath().length - 20,
                               fileList[index].getPath().length))),
                       IconButton(
                           onPressed: () {
@@ -156,9 +158,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                       if(value.logicalKey == LogicalKeyboardKey.enter){
                                         fileList.removeAt(index);
                                         await updateSharedData();
-                                        setState(() {});
                                         
-                                        Navigator.pop(context);
+                                        if(mounted) {
+                                          Navigator.pop(context);
+                                        }
                                       }
                                     },
                                     child: AlertDialog(
@@ -207,9 +210,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class MainView extends StatelessWidget {
   const MainView({
-    Key? key,
+    super.key,
     required this.dataList,
-  }) : super(key: key);
+  });
 
   final List<Data> dataList;
 
@@ -220,6 +223,8 @@ class MainView extends StatelessWidget {
       // in the middle of the parent.
       child: ListView.builder(
         itemBuilder: (BuildContext context, int index) {
+
+          print(dataList[index].AccountID);
           return Card(
             child: ListTile(
               leading: FutureBuilder(
@@ -232,10 +237,7 @@ class MainView extends StatelessWidget {
                     }
                   }),
               title: Text(dataList[index].AccountID),
-              subtitle: Text('Binding:' +
-                  dataList[index].BindAddress +
-                  '  URL:' +
-                  dataList[index].URL),
+              subtitle: Text('Binding:${dataList[index].BindAddress}  URL:${dataList[index].URL}'),
               onTap: () {
                 Clipboard.setData(
                     ClipboardData(text: dataList[index].Password));

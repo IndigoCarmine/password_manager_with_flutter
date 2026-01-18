@@ -20,7 +20,7 @@ Future<String> inputDialog(BuildContext context) async {
             TextButton(
               style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white)),
+                      WidgetStateProperty.all<Color>(Colors.white)),
               child: const Text('キャンセル', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 editingController.text = '';
@@ -30,7 +30,7 @@ Future<String> inputDialog(BuildContext context) async {
             TextButton(
               style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white)),
+                      WidgetStateProperty.all<Color>(Colors.white)),
               child: const Text('OK', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 //OKを押したあとの処理

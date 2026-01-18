@@ -18,7 +18,7 @@ class Data {
   Data(this.AccountID, this.BindAddress, this.Password, this.URL);
 
   Future<String> getFaviconURLAsync() async {
-    var icon = await favicon.Favicon.getBest(URL);
+    var icon = await favicon.FaviconFinder.getBest(URL);
     return (icon == null) ? '' : icon.url;
   }
 
@@ -28,12 +28,12 @@ class Data {
       image = Image.network(
         await getFaviconURLAsync(),
         errorBuilder: (context, error, stackTrace) => SizedBox(
+          width: iconsize,
+          height: iconsize,
           child: const Icon(
             Icons.error,
             color: Colors.red,
           ),
-          width: iconsize,
-          height: iconsize,
         ),
         width: iconsize,
         height: iconsize,
@@ -42,36 +42,20 @@ class Data {
       debugPrint((await getFaviconURLAsync()));
       debugPrint(e.toString());
       image = SizedBox(
-        child: const Icon(Icons.image_not_supported),
         width: iconsize,
         height: iconsize,
+        child: const Icon(Icons.image_not_supported),
       );
     }
   }
 
   factory Data.fromXmlElement(XmlElement xmlElement) {
-    String _AccountID = '', _BindAddress = '', _Password = '', _URL = '';
-    try {
-      _AccountID = xmlElement.findElements('AccountID').first.text;
-    } catch (e) {
-      _AccountID = "";
-    }
-    try {
-      _BindAddress = xmlElement.findElements('BindAddress').first.text;
-    } catch (e) {
-      _BindAddress = "";
-    }
-    try {
-      _Password = xmlElement.findElements('Password').first.text;
-    } catch (e) {
-      _Password = "";
-    }
-    try {
-      _URL = xmlElement.findElements('URL').first.text;
-    } catch (e) {
-      _URL = "";
-    }
-    return Data(_AccountID, _BindAddress, _Password, _URL);
+    String AccountID = (xmlElement.findAllElements('AccountID').firstOrNull?.innerText)??'';
+    String BindAddress = (xmlElement.findElements('BindAddress').firstOrNull?.innerText)??'';
+    String Password = (xmlElement.findElements('Password').firstOrNull?.innerText) ?? '';
+    String URL = (xmlElement.findElements('URL').firstOrNull?.innerText)??'';
+
+    return Data(AccountID, BindAddress, Password, URL);
   }
 }
 
@@ -87,7 +71,9 @@ class FileData {
   Future<List<Data>?> getData() async {
     if(_password ==null) return null;
     File file = File(_path);
-    if (!(await file.exists())) return null;
+    if (!(await file.exists())) {
+      return null;
+    }
 
     Uint8List fileContent = file.readAsBytesSync();
 
