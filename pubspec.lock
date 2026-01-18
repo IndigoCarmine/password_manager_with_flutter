@@ -292,26 +292,47 @@ packages:
     dependency: transitive
     description:
       name: leak_tracker
+<<<<<<< HEAD
       sha256: "33e2e26bdd85a0112ec15400c8cbffea70d0f9c3407491f672a2fad47915e2de"
       url: "https://pub.dev"
     source: hosted
     version: "11.0.2"
+=======
+      sha256: "3f87a60e8c63aecc975dda1ceedbc8f24de75f09e4856ea27daf8958f2f0ce05"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.0.5"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   leak_tracker_flutter_testing:
     dependency: transitive
     description:
       name: leak_tracker_flutter_testing
+<<<<<<< HEAD
       sha256: "1dbc140bb5a23c75ea9c4811222756104fbcd1a27173f0c34ca01e16bea473c1"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.10"
+=======
+      sha256: "932549fb305594d82d7183ecd9fa93463e9914e1b67cacc34bc40906594a1806"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.5"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   leak_tracker_testing:
     dependency: transitive
     description:
       name: leak_tracker_testing
+<<<<<<< HEAD
       sha256: "8d5a2d49f4a66b49744b23b018848400d23e54caf9463f4eb20df3eb8acb2eb1"
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+=======
+      sha256: "6ba465d5d76e67ddf503e1161d1f4a6bc42306f9d66ca1e8f079a47290fb06d3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   libcrypto:
     dependency: "direct main"
     description:
@@ -388,10 +409,17 @@ packages:
     dependency: transitive
     description:
       name: meta
+<<<<<<< HEAD
       sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
+=======
+      sha256: bdb68674043280c3428e9ec998512fb681678676b3c54e773629ffe74419f8c7
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.15.0"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   path:
     dependency: transitive
     description:
@@ -593,10 +621,17 @@ packages:
     dependency: transitive
     description:
       name: test_api
+<<<<<<< HEAD
       sha256: ab2726c1a94d3176a45960b6234466ec367179b87dd74f1611adb1f3b5fb9d55
       url: "https://pub.dev"
     source: hosted
     version: "0.7.7"
+=======
+      sha256: "5b8a98dafc4d5c4c9c72d8b31ab2b23fc13422348d2997120294d3bac86b4ddb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.2"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   typed_data:
     dependency: transitive
     description:
@@ -617,6 +652,7 @@ packages:
     dependency: transitive
     description:
       name: vm_service
+<<<<<<< HEAD
       sha256: "45caa6c5917fa127b5dbcfbd1fa60b14e583afdc08bfc96dda38886ca252eb60"
       url: "https://pub.dev"
     source: hosted
@@ -629,6 +665,12 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+=======
+      sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "14.2.5"
+>>>>>>> 87b68503ab81b0e3e9168a5e1f56651c9a9ed00e
   win32:
     dependency: transitive
     description:
